@@ -523,12 +523,95 @@ function init() {
     requestAnimationFrame(() => { updateTokenSize(); placeTokens(); })
   );
 
-  // Service worker
+   // =========================
+  // Service Worker + Update Prompt
+  // =========================
   if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./sw.js').catch(() => {});
+    window.addEventListener('load', async () => {
+      try {
+        const reg = await navigator.serviceWorker.register('./sw.js');
+
+        // If there's already a waiting SW, show update prompt
+        if (reg.waiting) {
+          showUpdatePrompt(reg);
+        }
+
+        // Listen for new updates
+        reg.addEventListener('updatefound', () => {
+          const newWorker = reg.installing;
+          if (!newWorker) return;
+
+          newWorker.addEventListener('statechange', () => {
+            if (
+              newWorker.state === 'installed' &&
+              navigator.serviceWorker.controller
+            ) {
+              showUpdatePrompt(reg);
+            }
+          });
+        });
+      } catch (e) {
+        console.warn('SW registration failed', e);
+      }
     });
   }
+
+ 
+}
+// =========================
+// Update Available UI
+// =========================
+function showUpdatePrompt(registration) {
+  // Prevent duplicate prompts
+  if (document.getElementById('update-toast')) return;
+
+  const toast = document.createElement('div');
+  toast.id = 'update-toast';
+  toast.innerHTML = `
+    <div style="
+      background: rgba(0,0,0,0.85);
+      color: #fff;
+      padding: 14px 18px;
+      border-radius: 14px;
+      box-shadow: 0 12px 28px rgba(0,0,0,0.4);
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      font-weight: 700;
+    ">
+      <span>⬆️ Update available</span>
+      <button id="update-reload-btn"
+        style="
+          background: linear-gradient(180deg,#51cf66,#2f9e44);
+          border: none;
+          color: #fff;
+          font-weight: 800;
+          padding: 8px 14px;
+          border-radius: 10px;
+          cursor: pointer;
+        ">
+        Refresh
+      </button>
+    </div>
+  `;
+
+  Object.assign(toast.style, {
+    position: 'fixed',
+    bottom: '20px',
+    left: '50%',
+    transform: 'translateX(-50%)',
+    zIndex: 9999
+  });
+
+  document.body.appendChild(toast);
+
+  document
+    .getElementById('update-reload-btn')
+    .addEventListener('click', () => {
+      if (registration.waiting) {
+        registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+      }
+    });
 }
 
 init();
