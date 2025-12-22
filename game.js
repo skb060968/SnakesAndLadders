@@ -435,6 +435,7 @@ function resetGame() {
   highlightCurrentPlayer();
 }
 
+
 // Init
 function init() {
   buildGrid();
@@ -459,53 +460,53 @@ function init() {
   const btnAI = document.getElementById('mode-ai');
 
   function setMode(isAI) {
-  vsComputer = isAI;
+    vsComputer = isAI;
 
-  // 🔹 UPDATE P2 LABEL HERE
-  const p2Label = document.getElementById('p2-label');
-  if (p2Label) {
-    p2Label.textContent = isAI ? '🟢 AI:' : '🟢 P2:';
+    // Update P2 label
+    const p2Label = document.getElementById('p2-label');
+    if (p2Label) {
+      p2Label.textContent = isAI ? '🤖 AI:' : '🟢 P2:';
+    }
+
+    btn2P.classList.toggle('active', !isAI);
+    btnAI.classList.toggle('active', isAI);
+
+    btn2P.setAttribute('aria-pressed', String(!isAI));
+    btnAI.setAttribute('aria-pressed', String(isAI));
+
+    messageEl.textContent = isAI
+      ? '🤖 Playing vs AI'
+      : '👥 Two Player Mode';
+
+    highlightCurrentPlayer();
+
+    if (vsComputer && currentPlayer === COMPUTER_PLAYER && !isAnimating) {
+      setTimeout(computerMove, 600);
+    }
   }
-
-  btn2P.classList.toggle('active', !isAI);
-  btnAI.classList.toggle('active', isAI);
-
-  btn2P.setAttribute('aria-pressed', String(!isAI));
-  btnAI.setAttribute('aria-pressed', String(isAI));
-
-  messageEl.textContent = isAI
-    ? '🤖 Playing vs AI'
-    : '👥 Two Player Mode';
-
-  highlightCurrentPlayer();
-
-  if (vsComputer && currentPlayer === COMPUTER_PLAYER && !isAnimating) {
-    setTimeout(computerMove, 600);
-  }
-}
-
 
   btn2P.addEventListener('click', () => setMode(false));
   btnAI.addEventListener('click', () => setMode(true));
 
-  // Default mode on load
+  // Default mode
   setMode(false);
 
   /* =========================
-     PANEL SYNC
+     PANEL SYNC (DESKTOP ONLY)
      ========================= */
   function syncPanelSize() {
     if (!controlColumn || !boardWrapper) return;
-    const boardRect = boardWrapper.getBoundingClientRect();
-    const narrow = window.matchMedia('(max-width:980px)').matches;
 
-    if (!narrow) {
+    // Let CSS handle mobile / PWA layout
+    if (window.matchMedia('(max-width: 900px)').matches) {
       controlColumn.style.width = '';
-      controlColumn.style.height = `${Math.round(boardRect.height)}px`;
-    } else {
       controlColumn.style.height = '';
-      controlColumn.style.width = `${Math.round(boardRect.width)}px`;
+      return;
     }
+
+    const boardRect = boardWrapper.getBoundingClientRect();
+    controlColumn.style.width = '';
+    controlColumn.style.height = `${Math.round(boardRect.height)}px`;
   }
 
   syncPanelSize();
@@ -522,96 +523,39 @@ function init() {
   window.addEventListener('resize', () =>
     requestAnimationFrame(() => { updateTokenSize(); placeTokens(); })
   );
-
-   // =========================
-  // Service Worker + Update Prompt
-  // =========================
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', async () => {
-      try {
-        const reg = await navigator.serviceWorker.register('./sw.js');
-
-        // If there's already a waiting SW, show update prompt
-        if (reg.waiting) {
-          showUpdatePrompt(reg);
-        }
-
-        // Listen for new updates
-        reg.addEventListener('updatefound', () => {
-          const newWorker = reg.installing;
-          if (!newWorker) return;
-
-          newWorker.addEventListener('statechange', () => {
-            if (
-              newWorker.state === 'installed' &&
-              navigator.serviceWorker.controller
-            ) {
-              showUpdatePrompt(reg);
-            }
-          });
-        });
-      } catch (e) {
-        console.warn('SW registration failed', e);
-      }
-    });
-  }
-
- 
 }
-// =========================
-// Update Available UI
-// =========================
-function showUpdatePrompt(registration) {
-  // Prevent duplicate prompts
-  if (document.getElementById('update-toast')) return;
 
-  const toast = document.createElement('div');
-  toast.id = 'update-toast';
-  toast.innerHTML = `
-    <div style="
-      background: rgba(0,0,0,0.85);
-      color: #fff;
-      padding: 14px 18px;
-      border-radius: 14px;
-      box-shadow: 0 12px 28px rgba(0,0,0,0.4);
-      display: flex;
-      gap: 12px;
-      align-items: center;
-      font-weight: 700;
-    ">
-      <span>⬆️ Update available</span>
-      <button id="update-reload-btn"
-        style="
-          background: linear-gradient(180deg,#51cf66,#2f9e44);
-          border: none;
-          color: #fff;
-          font-weight: 800;
-          padding: 8px 14px;
-          border-radius: 10px;
-          cursor: pointer;
-        ">
-        Refresh
-      </button>
-    </div>
-  `;
+/* =========================
+   SERVICE WORKER + UPDATE UI
+   ========================= */
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', async () => {
+    try {
+      const reg = await navigator.serviceWorker.register('./sw.js');
 
-  Object.assign(toast.style, {
-    position: 'fixed',
-    bottom: '20px',
-    left: '50%',
-    transform: 'translateX(-50%)',
-    zIndex: 9999
-  });
-
-  document.body.appendChild(toast);
-
-  document
-    .getElementById('update-reload-btn')
-    .addEventListener('click', () => {
-      if (registration.waiting) {
-        registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+      // Show update prompt immediately if waiting
+      if (reg.waiting) {
+        showUpdatePrompt(reg);
       }
-    });
+
+      // Listen for future updates
+      reg.addEventListener('updatefound', () => {
+        const newWorker = reg.installing;
+        if (!newWorker) return;
+
+        newWorker.addEventListener('statechange', () => {
+          if (
+            newWorker.state === 'installed' &&
+            navigator.serviceWorker.controller
+          ) {
+            showUpdatePrompt(reg);
+          }
+        });
+      });
+    } catch (e) {
+      console.warn('Service Worker registration failed', e);
+    }
+  });
 }
 
 init();
