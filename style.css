@@ -486,7 +486,7 @@ Responsive tweaks
   box-shadow: 0 3px 0 #157a40, 0 8px 18px rgba(0,0,0,0.35);
 }
 
-/* ---------- Mobile & PWA (Portrait Only Gameplay) ---------- */
+/* ---------- Mobile & PWA (Portrait Only Gameplay) ---------- 
 @media (max-width: 900px) {
   .app {
     display: flex;
@@ -520,6 +520,38 @@ Responsive tweaks
     padding-bottom: 16px;
   }
 
+*/
+@media (max-width: 900px) {
+  .app {
+    display: flex;
+    flex-direction: row;
+    height: 100dvh;
+    overflow: hidden;
+  }
+
+  .board-column {
+    flex: 0 0 55%;
+    max-width: 55%;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .board-wrapper {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1 / 1;
+  }
+
+  .control-column {
+    flex: 1 1 45%;
+    width: 45%;
+    height: 100%;
+    max-height: 100%;
+    overflow-y: auto;
+  }
+
+
+
   .controls-row,
   .bottom-row,
   .mode-toggle {
@@ -527,7 +559,7 @@ Responsive tweaks
   }
 }
 
-/* ---------- Landscape lock (phones) ---------- */
+/* ---------- Landscape lock (phones) ---------- 
 @media (max-width: 900px) and (orientation: landscape) {
   body::before {
     content: "Rotate your device to Portrait mode to play";
@@ -548,6 +580,10 @@ Responsive tweaks
     display: none !important;
   }
 }
+------------------------------------------------*/
+
+
+
 
 /* ---------- Desktop (unchanged behavior) ---------- */
 @media (min-width: 901px) {
