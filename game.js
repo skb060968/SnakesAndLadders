@@ -1,21 +1,21 @@
 /* game.js
-   - Responsive grid board (serpentine mapping)
-   - 3D PNG cube (tumble + settle)
-   - Single source-of-truth final value -> movement steps
-   - Step-by-step movement and snakes/ladders hooks
-   - Six-roll rules: accumulate rolls, jump animation on first two sixes, red glow penalty on third six
+- Responsive grid board (serpentine mapping)
+- 3D PNG cube (tumble + settle)
+- Single source-of-truth final value -> movement steps
+- Step-by-step movement and snakes/ladders hooks
+- Six-roll rules: accumulate rolls, jump animation on first two sixes, red glow penalty on third six
 */
 
 // CONFIG
 const BOARD_SIZE = 10;
 const TOTAL = BOARD_SIZE * BOARD_SIZE;
 const WIN_RULE = 'exact';
+
 const boardImg = document.getElementById('board-img');
 const boardWrapper = document.getElementById('board-wrapper');
 const gridEl = document.getElementById('grid');
 const token1 = document.getElementById('token1');
 const token2 = document.getElementById('token2');
-
 const diceCube = document.getElementById('dice-cube');
 const rollBtn = document.getElementById('roll-btn');
 const resetBtn = document.getElementById('reset-btn');
@@ -25,31 +25,31 @@ const p1posEl = document.getElementById('p1-pos');
 const p2posEl = document.getElementById('p2-pos');
 const controlColumn = document.querySelector('.control-column');
 
-let positions = {1:1, 2:1};
+let positions = { 1: 1, 2: 1 };
 let currentPlayer = 1;
 let isAnimating = false;
 
 // Play mode
-let vsComputer = false;     // set false for 2-player mode
+let vsComputer = false; // set false for 2-player mode
 const COMPUTER_PLAYER = 2;
 
-
 // Track consecutive sixes and turn totals per player
-let consecutiveSixes = {1:0, 2:0};
-let turnTotal = {1:0, 2:0};
+let consecutiveSixes = { 1: 0, 2: 0 };
+let turnTotal = { 1: 0, 2: 0 };
 
 // snakes & ladders
-const snakes = {99:76, 89:66, 80:57, 51:34, 35:12, 22:5};
-const ladders = {20:58, 47:68, 55:76, 69:90, 78:97};
+const snakes = { 99: 76, 89: 66, 80: 57, 51: 34, 35: 12, 22: 5 };
+const ladders = { 20: 58, 47: 68, 55: 76, 69: 90, 78: 97 };
 
 // AUDIO
 const sounds = {
-  roll:   new Audio('sounds/dice-roll.mp3'),
-  move:   new Audio('sounds/move.mp3'),
-  snake:  new Audio('sounds/snake.mp3'),
+  roll: new Audio('sounds/dice-roll.mp3'),
+  move: new Audio('sounds/move.mp3'),
+  snake: new Audio('sounds/snake.mp3'),
   ladder: new Audio('sounds/ladder.mp3'),
-  win:    new Audio('sounds/win.mp3')
+  win: new Audio('sounds/win.mp3')
 };
+
 function playSound(name) {
   const s = sounds[name];
   if (!s) return;
@@ -59,12 +59,12 @@ function playSound(name) {
 
 // Dice face rotations
 const faceRotations = {
-  1: { x:   0,  y:   0 },
-  2: { x:   0,  y: -90 },
-  3: { x:   0,  y: 180 },
-  4: { x:   0,  y:  90 },
-  5: { x: -90,  y:   0 },
-  6: { x:  90,  y:   0 }
+  1: { x: 0, y: 0 },
+  2: { x: 0, y: -90 },
+  3: { x: 0, y: 180 },
+  4: { x: 0, y: 90 },
+  5: { x: -90, y: 0 },
+  6: { x: 90, y: 0 }
 };
 
 // Build grid
@@ -75,6 +75,7 @@ function buildGrid() {
     d.className = 'cell';
     gridEl.appendChild(d);
   }
+
   const elems = Array.from(gridEl.children);
   elems.forEach((el, idx) => {
     const rowFromTop = Math.floor(idx / BOARD_SIZE);
@@ -89,6 +90,7 @@ function buildGrid() {
     const cellNumber = rowFromBottom * BOARD_SIZE + (cellInRow + 1);
     el.dataset.cell = cellNumber;
   });
+
   requestAnimationFrame(() => { updateTokenSize(); placeTokens(); });
 }
 
@@ -128,6 +130,7 @@ function placeTokens() {
   const c1 = getCellCenter(positions[1]);
   const c2 = getCellCenter(positions[2]);
   const offset = 18;
+
   if (same) {
     token1.style.left = `${c1.x - offset}px`;
     token2.style.left = `${c2.x + offset}px`;
@@ -135,8 +138,10 @@ function placeTokens() {
     token1.style.left = `${c1.x}px`;
     token2.style.left = `${c2.x}px`;
   }
+
   token1.style.top = `${c1.y}px`;
   token2.style.top = `${c2.y}px`;
+
   p1posEl.textContent = positions[1];
   p2posEl.textContent = positions[2];
 }
@@ -156,6 +161,7 @@ function throwDiceVisual(finalValue) {
       `translateY(0px) rotateX(${extra + rot.x}deg) rotateY(${extra + rot.y}deg)`;
   }, 360);
 }
+
 // Snake/ladder arc
 function animateSnakeOrLadder(player, targetCell, type, cb) {
   const token = player === 1 ? token1 : token2;
@@ -164,8 +170,10 @@ function animateSnakeOrLadder(player, targetCell, type, cb) {
   const end = getCellCenter(targetCell);
   const frames = 20;
   let frame = 0;
+
   if (type === 'ladder') playSound('ladder');
   if (type === 'snake') playSound('snake');
+
   const jump = setInterval(() => {
     frame++;
     const t = frame / frames;
@@ -175,6 +183,7 @@ function animateSnakeOrLadder(player, targetCell, type, cb) {
     const lift = Math.sin(Math.PI * t) * 18;
     token.style.left = `${x}px`;
     token.style.top = `${y - lift}px`;
+
     if (frame >= frames) {
       clearInterval(jump);
       positions[player] = targetCell;
@@ -231,31 +240,28 @@ async function handleRoll() {
   const final = Math.floor(Math.random() * 6) + 1;
   playSound('roll');
   throwDiceVisual(final);
-
   await new Promise(r => setTimeout(r, 1150));
 
   const token = currentPlayer === 1 ? token1 : token2;
-
   const startPos = positions[currentPlayer];
   const accumulated = turnTotal[currentPlayer];
   const intended = startPos + accumulated + final;
 
   /* =========================
      SIX HANDLING (STRICT)
-     ========================= */
-  if (final === 6) {
+  ========================= */
 
+  if (final === 6) {
     // ❌ Six cannot be used at all → no bonus, no move
     if (WIN_RULE === 'exact' && intended > TOTAL) {
       messageEl.textContent = `Need exact roll to reach ${TOTAL}.`;
       turnTotal[currentPlayer] = 0;
       consecutiveSixes[currentPlayer] = 0;
       currentPlayer = currentPlayer === 1 ? 2 : 1;
-     turnText.textContent = `${playerName(currentPlayer)}'s Turn`;
+      turnText.textContent = `${playerName(currentPlayer)}'s Turn`;
       rollBtn.disabled = false;
       isAnimating = false;
       highlightCurrentPlayer();
-
       if (vsComputer && currentPlayer === COMPUTER_PLAYER) {
         setTimeout(computerMove, 900);
       }
@@ -268,10 +274,8 @@ async function handleRoll() {
     // 🎯 Exact win (single or accumulated) → WIN, NO bonus roll
     if (startPos + turnTotal[currentPlayer] === TOTAL) {
       consecutiveSixes[currentPlayer] = 0;
-
       animateSteps(currentPlayer, turnTotal[currentPlayer], () => {
-      messageEl.textContent = `🎉 ${playerName(currentPlayer)} wins!`;
-
+        messageEl.textContent = `🎉 ${playerName(currentPlayer)} wins!`;
         if (typeof confetti === 'function') {
           confetti({
             particleCount: 250,
@@ -280,7 +284,6 @@ async function handleRoll() {
             colors: ['#ffd700', '#ff6b6b', '#51cf66', '#2b6ef6']
           });
         }
-
         playSound('win');
         rollBtn.disabled = true;
         isAnimating = false;
@@ -295,16 +298,14 @@ async function handleRoll() {
     if (consecutiveSixes[currentPlayer] === 3) {
       token.classList.add('penalty');
       setTimeout(() => token.classList.remove('penalty'), 1500);
-messageEl.textContent = `⚠️ ${playerName(currentPlayer)} rolled three sixes! Turn skipped.`;
-
+      messageEl.textContent = `⚠️ ${playerName(currentPlayer)} rolled three sixes! Turn skipped.`;
       turnTotal[currentPlayer] = 0;
       consecutiveSixes[currentPlayer] = 0;
       currentPlayer = currentPlayer === 1 ? 2 : 1;
-     turnText.textContent = `${playerName(currentPlayer)}'s Turn`;
+      turnText.textContent = `${playerName(currentPlayer)}'s Turn`;
       rollBtn.disabled = false;
       isAnimating = false;
       highlightCurrentPlayer();
-
       if (vsComputer && currentPlayer === COMPUTER_PLAYER) {
         setTimeout(computerMove, 900);
       }
@@ -317,10 +318,9 @@ messageEl.textContent = `⚠️ ${playerName(currentPlayer)} rolled three sixes!
       token.classList.remove('jump');
     }, { once: true });
 
-   messageEl.textContent = `🎁 ${playerName(currentPlayer)} rolled a 6, roll again!`;
+    messageEl.textContent = `🎁 ${playerName(currentPlayer)} rolled a 6, roll again!`;
     rollBtn.disabled = false;
     isAnimating = false;
-
     if (vsComputer && currentPlayer === COMPUTER_PLAYER) {
       setTimeout(computerMove, 700);
     }
@@ -329,7 +329,8 @@ messageEl.textContent = `⚠️ ${playerName(currentPlayer)} rolled three sixes!
 
   /* =========================
      NON-SIX MOVE
-     ========================= */
+  ========================= */
+
   turnTotal[currentPlayer] += final;
   const finalIntended = startPos + turnTotal[currentPlayer];
 
@@ -338,11 +339,10 @@ messageEl.textContent = `⚠️ ${playerName(currentPlayer)} rolled three sixes!
     turnTotal[currentPlayer] = 0;
     consecutiveSixes[currentPlayer] = 0;
     currentPlayer = currentPlayer === 1 ? 2 : 1;
-   turnText.textContent = `${playerName(currentPlayer)}'s Turn`;
+    turnText.textContent = `${playerName(currentPlayer)}'s Turn`;
     rollBtn.disabled = false;
     isAnimating = false;
     highlightCurrentPlayer();
-
     if (vsComputer && currentPlayer === COMPUTER_PLAYER) {
       setTimeout(computerMove, 900);
     }
@@ -357,7 +357,6 @@ messageEl.textContent = `⚠️ ${playerName(currentPlayer)} rolled three sixes!
   animateSteps(currentPlayer, steps, () => {
     if (positions[currentPlayer] === TOTAL) {
       messageEl.textContent = `🎉 ${playerName(currentPlayer)} wins!`;
-
       if (typeof confetti === 'function') {
         confetti({
           particleCount: 250,
@@ -366,7 +365,6 @@ messageEl.textContent = `⚠️ ${playerName(currentPlayer)} rolled three sixes!
           colors: ['#ffd700', '#ff6b6b', '#51cf66', '#2b6ef6']
         });
       }
-
       playSound('win');
       rollBtn.disabled = true;
       isAnimating = false;
@@ -374,31 +372,23 @@ messageEl.textContent = `⚠️ ${playerName(currentPlayer)} rolled three sixes!
     }
 
     currentPlayer = currentPlayer === 1 ? 2 : 1;
-   turnText.textContent = `${playerName(currentPlayer)}'s Turn`;
+    turnText.textContent = `${playerName(currentPlayer)}'s Turn`;
     rollBtn.disabled = false;
     isAnimating = false;
     highlightCurrentPlayer();
-
     if (vsComputer && currentPlayer === COMPUTER_PLAYER) {
       setTimeout(computerMove, 900);
     }
   });
 }
 
-
 function computerMove() {
   if (!vsComputer) return;
   if (currentPlayer !== COMPUTER_PLAYER) return;
   if (isAnimating) return;
-
   messageEl.textContent = '🤖 AI is rolling...';
-
-  // human-like thinking delay
-  setTimeout(() => {
-    handleRoll();
-  }, 900);
+  setTimeout(() => { handleRoll(); }, 900);
 }
-
 
 // Highlight current player's token
 function highlightCurrentPlayer() {
@@ -406,8 +396,7 @@ function highlightCurrentPlayer() {
   token2.classList.toggle('token-active', currentPlayer === 2);
 }
 
-
-//Player2 AI in v/s mode
+// Player2 AI in vs mode
 function playerName(n) {
   if (vsComputer && n === COMPUTER_PLAYER) {
     return '🤖 AI';
@@ -415,17 +404,15 @@ function playerName(n) {
   return `Player ${n}`;
 }
 
-
 // Reset game
 function resetGame() {
-  positions = {1:1, 2:1};
+  positions = { 1: 1, 2: 1 };
   currentPlayer = 1;
-  consecutiveSixes = {1:0, 2:0};
-  turnTotal = {1:0, 2:0};
+  consecutiveSixes = { 1: 0, 2: 0 };
+  turnTotal = { 1: 0, 2: 0 };
   p1posEl.textContent = 1;
   p2posEl.textContent = 1;
   turnText.textContent = `${playerName(1)}'s Turn`;
-
   messageEl.textContent = 'Ready';
   diceCube.style.transform = 'none';
   updateTokenSize();
@@ -434,7 +421,6 @@ function resetGame() {
   isAnimating = false;
   highlightCurrentPlayer();
 }
-
 
 // Init
 function init() {
@@ -455,22 +441,18 @@ function init() {
 
   /* =========================
      MODERN MODE TOGGLE (BUTTONS)
-     ========================= */
+  ========================= */
   const btn2P = document.getElementById('mode-2p');
   const btnAI = document.getElementById('mode-ai');
 
   function setMode(isAI) {
     vsComputer = isAI;
-
-    // Update P2 label
     const p2Label = document.getElementById('p2-label');
     if (p2Label) {
       p2Label.textContent = isAI ? '🤖 AI:' : '🟢 P2:';
     }
-
     btn2P.classList.toggle('active', !isAI);
     btnAI.classList.toggle('active', isAI);
-
     btn2P.setAttribute('aria-pressed', String(!isAI));
     btnAI.setAttribute('aria-pressed', String(isAI));
 
@@ -479,7 +461,6 @@ function init() {
       : '👥 Two Player Mode';
 
     highlightCurrentPlayer();
-
     if (vsComputer && currentPlayer === COMPUTER_PLAYER && !isAnimating) {
       setTimeout(computerMove, 600);
     }
@@ -487,23 +468,18 @@ function init() {
 
   btn2P.addEventListener('click', () => setMode(false));
   btnAI.addEventListener('click', () => setMode(true));
-
-  // Default mode
   setMode(false);
 
   /* =========================
      PANEL SYNC (DESKTOP ONLY)
-     ========================= */
+  ========================= */
   function syncPanelSize() {
     if (!controlColumn || !boardWrapper) return;
-
-    // Let CSS handle mobile / PWA layout
     if (window.matchMedia('(max-width: 900px)').matches) {
       controlColumn.style.width = '';
       controlColumn.style.height = '';
       return;
     }
-
     const boardRect = boardWrapper.getBoundingClientRect();
     controlColumn.style.width = '';
     controlColumn.style.height = `${Math.round(boardRect.height)}px`;
@@ -511,6 +487,7 @@ function init() {
 
   syncPanelSize();
   window.addEventListener('resize', () => requestAnimationFrame(syncPanelSize));
+
   if (boardImg) {
     boardImg.addEventListener('load', () =>
       requestAnimationFrame(syncPanelSize)
@@ -519,7 +496,6 @@ function init() {
 
   rollBtn.addEventListener('click', handleRoll);
   resetBtn.addEventListener('click', resetGame);
-
   window.addEventListener('resize', () =>
     requestAnimationFrame(() => { updateTokenSize(); placeTokens(); })
   );
@@ -552,8 +528,10 @@ if ("serviceWorker" in navigator) {
     }
   });
 
-  // When the new SW takes control, reload once
+  // When the new SW takes control, hide toast and reload once
   navigator.serviceWorker.addEventListener("controllerchange", () => {
+    const toast = document.getElementById("update-toast");
+    if (toast) toast.hidden = true;
     window.location.reload();
   });
 }
@@ -566,8 +544,16 @@ function showUpdatePrompt(reg) {
   toast.hidden = false;
 
   btn.onclick = () => {
-    if (!reg.waiting) return;
-    reg.waiting.postMessage({ type: "SKIP_WAITING" });
+    // Always hide banner on click
+    toast.hidden = true;
+
+    // If there is a waiting worker, trigger activation
+    if (reg.waiting) {
+      reg.waiting.postMessage({ type: "SKIP_WAITING" });
+    } else {
+      // Fallback: just reload to pick latest assets
+      window.location.reload();
+    }
   };
 }
 

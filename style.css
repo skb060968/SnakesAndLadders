@@ -1,21 +1,20 @@
 /* ==============================
-   Snakes & Ladders PWA — Final CSS
-   ============================== */
+Snakes & Ladders PWA — Final CSS
+============================== */
 
 /* -----------------------------
-   Variables
+Variables
 ----------------------------- */
 :root{
   --board-max: 720px;
   --frame-size: clamp(40px, 7%, 80px);
-
   --token-size: calc(var(--board-max) * 0.06);
   --accent: #2b6ef6;
   --cube-size: 110px;
 }
 
 /* -----------------------------
-   Reset
+Reset
 ----------------------------- */
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%}
@@ -30,7 +29,7 @@ body{
 }
 
 /* -----------------------------
-   Layout
+Layout
 ----------------------------- */
 .app{
   display:flex;
@@ -43,7 +42,7 @@ body{
 }
 
 /* -----------------------------
-   Board column
+Board column
 ----------------------------- */
 .board-column {
   display:flex;
@@ -93,7 +92,7 @@ body{
 }
 
 /* -----------------------------
-   Grid overlay
+Grid overlay
 ----------------------------- */
 .grid {
   position:absolute;
@@ -112,7 +111,7 @@ body{
 }
 
 /* -----------------------------
-   Tokens with enhanced glow/shadow
+Tokens with enhanced glow/shadow
 ----------------------------- */
 .token {
   position:absolute;
@@ -122,13 +121,11 @@ body{
   transform: translate(-50%, -50%);
   z-index:6;
   transition: left 320ms cubic-bezier(.2,.9,.2,1),
-              top 320ms cubic-bezier(.2,.9,.2,1),
-              box-shadow 0.2s ease;
+             top 320ms cubic-bezier(.2,.9,.2,1),
+             box-shadow 0.2s ease;
   background-size: cover;
   background-position: center;
-
-  /* Subtle enhancement for visibility */
-  box-shadow: 0 4px 10px rgba(0,0,0,0.35), 
+  box-shadow: 0 4px 10px rgba(0,0,0,0.35),
               0 0 6px rgba(255,255,255,0.15) inset;
 }
 
@@ -137,8 +134,8 @@ body{
 
 /* Hop animation */
 @keyframes token-slide {
-  0%   { transform: translate(-50%, -50%) scale(1); }
-  40%  { transform: translate(-50%, -52%) scale(1.05); }
+  0% { transform: translate(-50%, -50%) scale(1); }
+  40% { transform: translate(-50%, -52%) scale(1.05); }
   100% { transform: translate(-50%, -50%) scale(1); }
 }
 .token.slide { animation: token-slide 0.35s ease-in-out; }
@@ -149,16 +146,16 @@ body{
   animation: token-pulse 1.2s ease-in-out infinite;
 }
 @keyframes token-pulse {
-  0%   { transform: translate(-50%, -50%) scale(1); }
-  50%  { transform: translate(-50%, -50%) scale(1.08); }
+  0% { transform: translate(-50%, -50%) scale(1); }
+  50% { transform: translate(-50%, -50%) scale(1.08); }
   100% { transform: translate(-50%, -50%) scale(1); }
 }
 
 /* Token jump for first two sixes */
 @keyframes token-jump {
-  0%   { transform: translate(-50%, -50%) scale(1); }
-  30%  { transform: translate(-50%, -65%) scale(1.15); }
-  60%  { transform: translate(-50%, -45%) scale(0.95); }
+  0% { transform: translate(-50%, -50%) scale(1); }
+  30% { transform: translate(-50%, -65%) scale(1.15); }
+  60% { transform: translate(-50%, -45%) scale(0.95); }
   100% { transform: translate(-50%, -50%) scale(1); }
 }
 .token.jump {
@@ -167,10 +164,10 @@ body{
 
 /* Red glow penalty for triple six */
 @keyframes token-penalty-glow {
-  0%   { box-shadow: 0 0 0px rgba(255,0,0,0); }
-  25%  { box-shadow: 0 0 30px 12px rgba(255,0,0,0.9); }
-  50%  { box-shadow: 0 0 40px 16px rgba(255,0,0,1); }
-  75%  { box-shadow: 0 0 30px 12px rgba(255,0,0,0.9); }
+  0% { box-shadow: 0 0 0px rgba(255,0,0,0); }
+  25% { box-shadow: 0 0 30px 12px rgba(255,0,0,0.9); }
+  50% { box-shadow: 0 0 40px 16px rgba(255,0,0,1); }
+  75% { box-shadow: 0 0 30px 12px rgba(255,0,0,0.9); }
   100% { box-shadow: 0 0 0px rgba(255,0,0,0); }
 }
 .token.penalty {
@@ -178,7 +175,7 @@ body{
 }
 
 /* -----------------------------
-   Control column — Glass panel
+Control column — Glass panel
 ----------------------------- */
 .control-column {
   flex: 1 1 340px;
@@ -189,9 +186,8 @@ body{
   padding:20px 22px;
   border-radius:14px;
   box-shadow:
-  inset 0 0 12px rgba(255,255,255,0.15),
-  0 14px 32px rgba(0,0,0,0.25);
-
+    inset 0 0 12px rgba(255,255,255,0.15),
+    0 14px 32px rgba(0,0,0,0.25);
   display:flex;
   flex-direction:column;
   gap:14px;
@@ -217,7 +213,7 @@ body{
 }
 
 /* ==============================
-   Dice Stage
+Dice Stage
 ============================== */
 .dice-stage {
   margin: 6px 0;
@@ -227,7 +223,7 @@ body{
 }
 
 /* ==============================
-   Dice Cube (NO shadows here)
+Dice Cube (NO shadows here)
 ============================== */
 .dice-cube {
   width: 100%;
@@ -245,29 +241,22 @@ body{
 }
 
 /* ==============================
-   Dice Faces
+Dice Faces
 ============================== */
 .die-face {
   position: absolute;
   width: 100%;
   height: 100%;
-
-  /* Perfect square faces */
   border-radius: 0;
-
   background-size: cover;
   background-position: center;
   backface-visibility: hidden;
-
-  /* Very subtle lighting ONLY */
   box-shadow:
     inset 0 1px 2px rgba(255,255,255,0.18),
     inset 0 -2px 3px rgba(0,0,0,0.22);
 }
 
-/* ==============================
-   Face Images
-============================== */
+/* Face Images */
 .face1 { background-image: url('images/die-1.png'); }
 .face2 { background-image: url('images/die-2.png'); }
 .face3 { background-image: url('images/die-3.png'); }
@@ -275,19 +264,16 @@ body{
 .face5 { background-image: url('images/die-5.png'); }
 .face6 { background-image: url('images/die-6.png'); }
 
-/* ==============================
-   Face Positioning (anti-seam)
-============================== */
-.die-face:nth-child(1) { transform: rotateY(0deg)   translateZ(calc(var(--cube-size) / 2 + 0.6px)); }
-.die-face:nth-child(2) { transform: rotateY(90deg)  translateZ(calc(var(--cube-size) / 2 + 0.6px)); }
+/* Face Positioning (anti-seam) */
+.die-face:nth-child(1) { transform: rotateY(0deg) translateZ(calc(var(--cube-size) / 2 + 0.6px)); }
+.die-face:nth-child(2) { transform: rotateY(90deg) translateZ(calc(var(--cube-size) / 2 + 0.6px)); }
 .die-face:nth-child(3) { transform: rotateY(180deg) translateZ(calc(var(--cube-size) / 2 + 0.6px)); }
 .die-face:nth-child(4) { transform: rotateY(-90deg) translateZ(calc(var(--cube-size) / 2 + 0.6px)); }
-.die-face:nth-child(5) { transform: rotateX(90deg)  translateZ(calc(var(--cube-size) / 2 + 0.6px)); }
+.die-face:nth-child(5) { transform: rotateX(90deg) translateZ(calc(var(--cube-size) / 2 + 0.6px)); }
 .die-face:nth-child(6) { transform: rotateX(-90deg) translateZ(calc(var(--cube-size) / 2 + 0.6px)); }
 
-
 /* -----------------------------
-   Buttons
+Buttons
 ----------------------------- */
 .controls-row,
 .bottom-row {
@@ -336,7 +322,7 @@ body{
 }
 
 /* -----------------------------
-   Modern Mode Toggle (Colorful)
+Modern Mode Toggle (Colorful)
 ----------------------------- */
 .mode-toggle {
   width: 100%;
@@ -344,13 +330,11 @@ body{
   justify-content: center;
   margin: 4px 0 8px;
 }
-
 .mode-toggle.modern {
   display: flex;
   gap: 10px;
   width: 100%;
 }
-
 .mode-btn {
   flex: 1;
   padding: 10px 12px;
@@ -370,16 +354,13 @@ body{
     background 0.2s ease,
     filter 0.2s ease;
 }
-
-.mode-btn:hover {
-  filter: brightness(1.08);
-}
+.mode-btn:hover { filter: brightness(1.08); }
 
 /* Active: 2 Player */
 .mode-btn.active#mode-2p {
- background: linear-gradient(180deg, #51cf66, #2f9e44);
+  background: linear-gradient(180deg, #51cf66, #2f9e44);
   box-shadow:
-     0 6px 0 #1b7a32,
+    0 6px 0 #1b7a32,
     0 10px 22px rgba(0,0,0,0.35);
 }
 
@@ -390,7 +371,6 @@ body{
     0 6px 0 #1b7a32,
     0 10px 22px rgba(0,0,0,0.35);
 }
-
 .mode-btn:active {
   transform: translateY(3px);
   box-shadow:
@@ -398,10 +378,8 @@ body{
     0 4px 10px rgba(0,0,0,0.25);
 }
 
-
-
 /* -----------------------------
-   Status & messages
+Status & messages
 ----------------------------- */
 .status-row {
   margin-top: 4px;
@@ -441,7 +419,7 @@ body{
 }
 
 /* -----------------------------
-   Responsive tweaks
+Responsive tweaks
 ----------------------------- */
 @media (max-width: 768px) {
   .app {
@@ -463,17 +441,13 @@ body{
   }
 }
 
-/* ==============================
-   Game Mode Toggle (Safe Visual)
-============================== */
-
+/* Game Mode Toggle (Safe Visual) */
 .mode-toggle.modern {
   display: flex;
   gap: 10px;
   width: 100%;
   justify-content: center;
 }
-
 .mode-btn {
   flex: 1;
   padding: 10px 12px;
@@ -489,120 +463,40 @@ body{
     filter 0.12s ease,
     background 0.2s ease;
 }
-
 /* Default (inactive) */
 .mode-btn {
   background: linear-gradient(180deg, #6b4a2b, #4b2a12);
   box-shadow: 0 5px 0 #3a1f0d, 0 8px 18px rgba(0,0,0,0.35);
   opacity: 0.75;
 }
-
-/* Hover */
-.mode-btn:hover {
-  filter: brightness(1.08);
-}
-
+.mode-btn:hover { filter: brightness(1.08); }
 /* Active common */
 .mode-btn.active {
   opacity: 1;
   transform: translateY(2px);
 }
-
 /* 👥 Two Player — BLUE */
 #mode-2p.active {
   background: linear-gradient(180deg, #2b6ef6, #1e4fbf);
   box-shadow: 0 3px 0 #153b8f, 0 8px 18px rgba(0,0,0,0.35);
 }
-
 /* 🤖 Vs Computer — GREEN */
 #mode-ai.active {
   background: linear-gradient(180deg, #2ecc71, #1e9e55);
   box-shadow: 0 3px 0 #157a40, 0 8px 18px rgba(0,0,0,0.35);
 }
 
-/* =========================================================
-   DESKTOP — SMALL WINDOW SAFETY
-   ========================================================= */
-@media (min-width: 901px) {
-
-  /* Force vertical layout unless wide enough */
-  @media (max-width: 1100px) {
-    .app {
-      flex-direction: column;
-      align-items: center;
-    }
-
-    .control-column {
-      width: 100%;
-      max-width: 520px;
-      height: auto;
-    }
-  }
-
-  /* Wide desktop = side-by-side */
-  @media (min-width: 1101px) {
-    .app {
-      flex-direction: row;
-      align-items: flex-start;
-    }
-  }
-}
-
-/* =========================================================
-   TOKEN POSITION FIX — PORTRAIT PRECISION
-   ========================================================= */
-@media (max-width: 900px) {
-
-  .token {
-    transform: translate(-50%, -50%) scale(0.96);
-  }
-
-  .token-active {
-    box-shadow: 0 0 14px 5px rgba(255,255,255,0.75);
-  }
-}
-
-/* =========================================================
-   OPTIONAL: Lock PWA to portrait (supported browsers)
-   ========================================================= */
-@media screen and (orientation: landscape) and (max-width: 900px) {
-  body::before {
-    content: "🔄 Rotate device to portrait for best experience";
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.85);
-    color: #fff;
-    font-size: 1.2rem;
-    font-weight: 700;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 9999;
-    text-align: center;
-    padding: 20px;
-  }
-}
-
-/* ---------- Base safety ---------- */
-html, body {
-  height: 100%;
-  overflow-x: hidden;
-}
-
 /* ---------- Mobile & PWA (Portrait Only Gameplay) ---------- */
 @media (max-width: 900px) {
-  /* App stacks vertically */
   .app {
     display: flex;
     flex-direction: column;
-    /* allow full page scroll */
     height: auto;
     min-height: 100dvh;
     overflow-y: auto;
     overflow-x: hidden;
   }
 
-  /* Board always visible on top */
   .board-column {
     flex: 0 0 auto;
     width: 100%;
@@ -617,17 +511,15 @@ html, body {
     aspect-ratio: 1 / 1;
   }
 
-  /* Control panel BELOW board */
   .control-column {
     flex: 1 1 auto;
     width: 100%;
-    height: auto !important; /* override JS sync on mobile */
+    height: auto !important;
     max-height: none;
     overflow-y: visible;
     padding-bottom: 16px;
   }
 
-  /* Prevent buttons touching edges */
   .controls-row,
   .bottom-row,
   .mode-toggle {
@@ -652,7 +544,6 @@ html, body {
     text-align: center;
     padding: 24px;
   }
-
   .app {
     display: none !important;
   }
@@ -665,11 +556,9 @@ html, body {
     flex-direction: row;
     align-items: stretch;
   }
-
   .board-column {
     flex: 0 0 auto;
   }
-
   .control-column {
     overflow: hidden;
   }
@@ -692,7 +581,6 @@ html, body {
   font-weight: 700;
   box-shadow: 0 10px 25px rgba(0,0,0,0.4);
 }
-
 #update-toast button {
   background: linear-gradient(180deg, #51cf66, #2f9e44);
   border: none;
