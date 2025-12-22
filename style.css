@@ -612,6 +612,7 @@ html, body {
   .board-wrapper {
     width: min(88vh, 92vw);
     height: min(88vh, 92vw);
+	contain: layout paint;
   }
 
   /* Panel below board */
@@ -709,4 +710,98 @@ html, body {
   border-radius: 8px;
   cursor: pointer;
   font-weight: 800;
+}
+
+/* =========================================================
+   RESPONSIVE LAYOUT FIX – FINAL
+   ========================================================= */
+
+/* ---------- Base safety ---------- */
+html, body {
+  height: 100%;
+  overflow-x: hidden;
+}
+
+/* ---------- Mobile & PWA (Portrait Only Gameplay) ---------- */
+@media (max-width: 900px) {
+
+  /* App stacks vertically */
+  .app {
+    display: flex;
+    flex-direction: column;
+    height: 100dvh;
+    overflow: hidden;
+  }
+
+  /* Board always visible on top */
+  .board-column {
+    flex: 0 0 auto;
+    width: 100%;
+    max-height: 52vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .board-wrapper {
+    width: min(96vw, 420px);
+    aspect-ratio: 1 / 1;
+  }
+
+  /* Control panel BELOW board */
+  .control-column {
+    flex: 1 1 auto;
+    width: 100%;
+    height: auto !important; /* override JS */
+    max-height: none;
+    overflow-y: auto;
+    padding-bottom: 16px;
+  }
+
+  /* Prevent buttons touching edges */
+  .controls-row,
+  .bottom-row,
+  .mode-toggle {
+    padding-inline: 12px;
+  }
+}
+
+/* ---------- Landscape lock (phones) ---------- */
+@media (max-width: 900px) and (orientation: landscape) {
+  body::before {
+    content: "🔄 Rotate your device to Portrait mode to play";
+    position: fixed;
+    inset: 0;
+    background: #0b0e14;
+    color: #fff;
+    font-size: 1.1rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 99999;
+    text-align: center;
+    padding: 24px;
+  }
+
+  .app {
+    display: none !important;
+  }
+}
+
+/* ---------- Desktop (unchanged behavior) ---------- */
+@media (min-width: 901px) {
+  .app {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+  }
+
+  .board-column {
+    flex: 0 0 auto;
+  }
+
+  .control-column {
+    overflow: hidden;
+  }
 }
