@@ -530,47 +530,98 @@ Responsive layout
   }
 }
 
-/* Phones & small tablets: side‑by‑side with scroll */
-@media (max-width: 900px) {
+
+/* ---------- Phone landscape: side‑by‑side, no scroll ---------- */
+
+@media (max-width: 900px) and (orientation: landscape) {
   body {
-    padding: 12px;
+    padding: 0;              /* use full viewport */
   }
 
   .app {
+    display: flex;
     flex-direction: row;
-    align-items: flex-start;
-    height: auto;
-    min-height: 100dvh;
-    overflow-y: auto;
-    overflow-x: hidden;
+    align-items: stretch;
+    width: 100vw;
+    height: 100vh;
+    max-width: 100vw;
+    max-height: 100vh;
+    overflow: hidden;        /* no scroll */
   }
 
+  /* Board column uses full height, fixed ratio */
   .board-column {
-    flex: 0 0 55%;
-    max-width: 55%;
-    justify-content: flex-start;
+    flex: 0 0 55vw;          /* ~55% of width for board */
+    max-width: 55vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 
   .board-wrapper {
     width: 100%;
-    height: auto;
-    max-height: none;
-    aspect-ratio: 1 / 1;
+    height: 100%;
+    max-width: 55vw;
+    max-height: 100vh;
+    aspect-ratio: auto;      /* let height drive size */
   }
 
+  .board-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;     /* keep full board visible with frame */
+  }
+
+  .grid {
+    inset: 0;
+    padding: 6px;            /* slightly smaller padding */
+  }
+
+  /* Control panel column fills right side, same height */
   .control-column {
-    flex: 1 1 45%;
-    max-width: 45%;
-    height: auto;
-    max-height: none;
-    overflow-y: visible;
-    padding-bottom: 16px;
+    flex: 1 1 auto;
+    max-width: 45vw;
+    height: 100vh;
+    max-height: 100vh;
+    overflow: hidden;        /* internal layout must fit */
+    padding: 10px 12px;
+    gap: 10px;
+  }
+
+  /* Make inner elements more compact so they fit vertically */
+  .title {
+    font-size: 1.1rem;
+  }
+
+  .turn {
+    font-size: 1.1rem;
+    margin-top: 2px;
+  }
+
+  .dice-stage {
+    width: 80px;
+    height: 80px;
   }
 
   .controls-row,
-  .bottom-row,
-  .mode-toggle {
-    padding-inline: 8px;
+  .bottom-row {
+    max-width: 100%;
+  }
+
+  .btn {
+    min-width: 0;
+    max-width: 100%;
+    padding: 8px 10px;
+    font-size: 0.85rem;
+  }
+
+  .status-row .positions {
+    font-size: 1.2rem;
+  }
+
+  .message {
+    font-size: 1rem;
+    margin-bottom: 8px;
   }
 }
 
