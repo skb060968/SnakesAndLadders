@@ -590,3 +590,6 @@ Responsive tweaks
   cursor: pointer;
   font-weight: 800;
 }
+#update-toast[hidden] {
+  display: none !important;
+}
