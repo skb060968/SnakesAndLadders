@@ -544,7 +544,7 @@ function showUpdatePrompt(reg) {
   toast.hidden = false;
 
   btn.onclick = () => {
-    // Always hide banner on click
+    // Always hide banner on click after update
     toast.hidden = true;
 
     // If there is a waiting worker, trigger activation
