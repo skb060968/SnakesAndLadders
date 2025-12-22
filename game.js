@@ -525,37 +525,50 @@ function init() {
   );
 }
 
-/* =========================
-   SERVICE WORKER + UPDATE UI
-   ========================= */
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', async () => {
+// SERVICE WORKER UPDATE UI
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", async () => {
     try {
-      const reg = await navigator.serviceWorker.register('./sw.js');
+      const reg = await navigator.serviceWorker.register("./sw.js");
 
-      // Show update prompt immediately if waiting
+      // Show update prompt immediately if waiting already
       if (reg.waiting) {
         showUpdatePrompt(reg);
       }
 
       // Listen for future updates
-      reg.addEventListener('updatefound', () => {
+      reg.addEventListener("updatefound", () => {
         const newWorker = reg.installing;
         if (!newWorker) return;
 
-        newWorker.addEventListener('statechange', () => {
-          if (
-            newWorker.state === 'installed' &&
-            navigator.serviceWorker.controller
-          ) {
+        newWorker.addEventListener("statechange", () => {
+          if (newWorker.state === "installed" && navigator.serviceWorker.controller) {
             showUpdatePrompt(reg);
           }
         });
       });
     } catch (e) {
-      console.warn('Service Worker registration failed', e);
+      console.warn("Service Worker registration failed", e);
     }
   });
+
+  // When the new SW takes control, reload once
+  navigator.serviceWorker.addEventListener("controllerchange", () => {
+    window.location.reload();
+  });
+}
+
+function showUpdatePrompt(reg) {
+  const toast = document.getElementById("update-toast");
+  const btn = document.getElementById("update-refresh-btn");
+  if (!toast || !btn) return;
+
+  toast.hidden = false;
+
+  btn.onclick = () => {
+    if (!reg.waiting) return;
+    reg.waiting.postMessage({ type: "SKIP_WAITING" });
+  };
 }
 
 init();
