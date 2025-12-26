@@ -170,7 +170,7 @@ Tokens
 /* Active player glow */
 .token-active {
   box-shadow:
-    0 0 20px 8px rgba(255, 255, 255, 0.95);   /* stronger outer glow */
+         0 0 25px 25px rgba(255, 255, 255, 0.9); /*  white */
   animation: token-pulse 1.1s ease-in-out infinite;
 }
 
@@ -193,10 +193,10 @@ Tokens
     transform: translate(-50%, -50%) scale(1);
   }
   30% {
-    transform: translate(-50%, -65%) scale(1.15);
+    transform: translate(-50%, -70%) scale(1.25);
   }
   60% {
-    transform: translate(-50%, -45%) scale(0.95);
+    transform: translate(-50%, -40%) scale(0.95);
   }
   100% {
     transform: translate(-50%, -50%) scale(1);
