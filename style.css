@@ -62,12 +62,10 @@ body {
   max-height: var(--board-max);
   border-radius: 14px;
   box-shadow: 0 22px 60px rgba(0, 0, 0, 0.42);
-  /* allow frame pseudo-element to show outside */
-  overflow: visible;
+  overflow: visible; /* allow frame pseudo-element to show */
   background: #fff;
   z-index: 2;
 }
-
 
 /* Frame image */
 .board-wrapper::before {
@@ -285,12 +283,15 @@ body {
   gap: 14px;
   align-items: center;
   border: 2px solid rgba(92, 51, 23, 0.2);
+  justify-content: space-between; /* keep bottom-row near bottom */
 }
 
+/* Title & turn */
 .title {
   text-align: center;
-  font-size: clamp(1.2rem, 2.2vw, 1.5rem);
+  font-size: clamp(1.6rem, 2.8vw, 2.1rem); /* larger */
   font-family: "Georgia", serif;
+  font-weight: 700; /* bold */
   color: #fff;
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.35);
 }
@@ -298,8 +299,8 @@ body {
 .turn {
   text-align: center;
   font-weight: 700;
-  margin-top: 4px;
-  font-size: clamp(1.3rem, 2.6vw, 1.7rem);
+  margin-top: 6px;
+  font-size: clamp(1.2rem, 2.3vw, 1.6rem);
   color: #fff;
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.35);
 }
@@ -385,6 +386,7 @@ body {
   gap: 10px;
   max-width: 240px;
   align-items: center;
+  flex-shrink: 0; /* prevents moving due to content */
 }
 
 .btn {
@@ -541,7 +543,6 @@ body {
   align-items: center;
 }
 
-
 .message {
   margin-top: 2px;
   margin-bottom: 18px;
@@ -624,7 +625,7 @@ body {
   }
 
   .title {
-    font-size: 1.1rem;
+    font-size: 1.4rem;
   }
 
   .turn {
