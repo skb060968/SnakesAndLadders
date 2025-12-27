@@ -62,10 +62,12 @@ body {
   max-height: var(--board-max);
   border-radius: 14px;
   box-shadow: 0 22px 60px rgba(0, 0, 0, 0.42);
-  overflow: hidden;
+  /* allow frame pseudo-element to show outside */
+  overflow: visible;
   background: #fff;
   z-index: 2;
 }
+
 
 /* Frame image */
 .board-wrapper::before {
@@ -524,10 +526,21 @@ body {
 }
 
 .status-row .positions {
-  font-size: clamp(1.9rem, 3.4vw, 2.6rem);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  font-size: clamp(1.3rem, 2.2vw, 1.6rem);
   font-weight: 900;
   letter-spacing: 0.5px;
 }
+
+.status-row .player-row {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
 
 .message {
   margin-top: 2px;

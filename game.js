@@ -376,26 +376,32 @@ async function handleRoll() {
 
     // Exact win from accumulated (no bonus roll)
     if (startPos + turnTotal[currentPlayer] === TOTAL) {
-      consecutiveSixes[currentPlayer] = 0;
-      const steps = turnTotal[currentPlayer];
-      turnTotal[currentPlayer] = 0;
+  consecutiveSixes[currentPlayer] = 0;
+  const steps = turnTotal[currentPlayer];
+  turnTotal[currentPlayer] = 0;
 
-      animateSteps(currentPlayer, steps, () => {
-        messageEl.textContent = `🎉 ${playerName(currentPlayer)} wins!`;
-        if (typeof confetti === "function") {
-          confetti({
-            particleCount: 250,
-            spread: 100,
-            origin: { y: 0.6 },
-            colors: ["#ffd700", "#ff6b6b", "#51cf66", "#2b6ef6"]
-          });
-        }
-        playSound("win");
-        rollBtn.disabled = true;
-        isAnimating = false;
-      });
-      return;
+  animateSteps(currentPlayer, steps, () => {
+    messageEl.textContent = `🎉 ${playerName(currentPlayer)} wins!`;
+
+    try {
+      if (typeof confetti === "function") {
+        confetti({
+          particleCount: 250,
+          spread: 100,
+          origin: { y: 0.6 },
+          colors: ["#ffd700", "#ff6b6b", "#51cf66", "#2b6ef6"]
+        });
+      }
+    } catch (e) {
+      console.warn("Confetti effect failed", e);
     }
+
+    playSound("win");
+    rollBtn.disabled = true;
+    isAnimating = false;
+  });
+  return;
+}
 
     // Count six
     consecutiveSixes[currentPlayer]++;

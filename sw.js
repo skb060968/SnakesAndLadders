@@ -3,7 +3,7 @@
    Cache-first + update prompt
 ============================== */
 
-const CACHE_NAME = "snl-3d-v18"; // bump on every deploy
+const CACHE_NAME = "snl-3d-v19"; // bump on every deploy
 
 const ASSETS = [
   "./",
