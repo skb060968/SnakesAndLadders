@@ -1,10 +1,9 @@
 /* ==============================
    Snakes & Ladders PWA Service Worker
-   - Cache-first strategy
-   - Update detection + prompt support + mobile compatibility
+   Cache-first + update prompt
 ============================== */
 
-const CACHE_NAME = "snl-3d-v17"; // ⬅️ bump on every deploy
+const CACHE_NAME = "snl-3d-v18"; // bump on every deploy
 
 const ASSETS = [
   "./",
@@ -32,22 +31,15 @@ const ASSETS = [
   "./sounds/win.mp3"
 ];
 
-/* ==============================
-   Install
-============================== */
-
+/* Install */
 self.addEventListener("install", event => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS))
   );
-  // IMPORTANT: do NOT call skipWaiting here.
-  // New SW will sit in "waiting" until page asks it to activate.
+  // Do not skipWaiting here; app will trigger when user accepts update.
 });
 
-/* ==============================
-   Activate
-============================== */
-
+/* Activate */
 self.addEventListener("activate", event => {
   event.waitUntil(
     caches.keys().then(keys =>
@@ -56,33 +48,25 @@ self.addEventListener("activate", event => {
           if (key !== CACHE_NAME) {
             return caches.delete(key);
           }
+          return null;
         })
       )
     )
   );
-  // Take control of all clients
   self.clients.claim();
 });
 
-/* ==============================
-   Fetch (cache-first)
-============================== */
-
+/* Fetch (cache-first) */
 self.addEventListener("fetch", event => {
   event.respondWith(
     caches.match(event.request).then(cached =>
       cached ||
-      fetch(event.request).catch(() =>
-        caches.match("./index.html")
-      )
+      fetch(event.request).catch(() => caches.match("./index.html"))
     )
   );
 });
 
-/* ==============================
-   Listen for SKIP_WAITING message
-============================== */
-
+/* Listen for SKIP_WAITING message */
 self.addEventListener("message", event => {
   if (event.data && event.data.type === "SKIP_WAITING") {
     self.skipWaiting();

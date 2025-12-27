@@ -1,21 +1,17 @@
 /* ==============================
-   Snakes & Ladders PWA — Final CSS
+   Snakes & Ladders PWA — CSS
 ============================== */
 
-/* -----------------------------
-Variables
------------------------------ */
+/* -------- Variables -------- */
 :root {
   --board-max: 720px;
   --frame-size: clamp(40px, 7%, 80px);
-  --token-size: calc(var(--board-max) * 0.06);
+  --token-size: 32px; /* updated dynamically via JS based on cell size */
   --accent: #2b6ef6;
   --cube-size: 110px;
 }
 
-/* -----------------------------
-Reset
------------------------------ */
+/* -------- Reset / base -------- */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -30,16 +26,14 @@ body {
 body {
   font-family: "Segoe UI", Roboto, Arial, sans-serif;
   background:
-    url("images/wood.png") center/cover fixed,
+    url("images/wood.png") center / cover fixed,
     linear-gradient(180deg, #efe8dd, #e0d2b9);
   display: flex;
   justify-content: center;
   padding: 24px;
 }
 
-/* -----------------------------
-Layout container
------------------------------ */
+/* -------- Layout container -------- */
 .app {
   display: flex;
   gap: 20px;
@@ -50,9 +44,7 @@ Layout container
   flex-wrap: wrap;
 }
 
-/* -----------------------------
-Board column
------------------------------ */
+/* -------- Board column -------- */
 .board-column {
   display: flex;
   flex-direction: column;
@@ -72,8 +64,10 @@ Board column
   box-shadow: 0 22px 60px rgba(0, 0, 0, 0.42);
   overflow: hidden;
   background: #fff;
+  z-index: 2;
 }
 
+/* Frame image */
 .board-wrapper::before {
   content: "";
   position: absolute;
@@ -89,11 +83,6 @@ Board column
   pointer-events: none;
 }
 
-.board-wrapper {
-  z-index: 2;
-  overflow: visible;
-}
-
 .board-img {
   position: absolute;
   inset: 0;
@@ -103,9 +92,7 @@ Board column
   z-index: 1;
 }
 
-/* -----------------------------
-Grid overlay
------------------------------ */
+/* -------- Grid overlay -------- */
 .grid {
   position: absolute;
   inset: 0;
@@ -122,9 +109,7 @@ Grid overlay
   background: rgba(255, 255, 255, 0.02);
 }
 
-/* -----------------------------
-Tokens
------------------------------ */
+/* -------- Tokens -------- */
 .token {
   position: absolute;
   width: var(--token-size);
@@ -146,6 +131,7 @@ Tokens
 .token1 {
   background-image: url("images/red.png");
 }
+
 .token2 {
   background-image: url("images/green.png");
 }
@@ -169,8 +155,7 @@ Tokens
 
 /* Active player glow */
 .token-active {
-  box-shadow:
-         0 0 25px 25px rgba(255, 255, 255, 0.9); /*  white */
+  box-shadow: 0 0 25px 25px rgba(255, 255, 255, 0.9);
   animation: token-pulse 1.1s ease-in-out infinite;
 }
 
@@ -179,13 +164,12 @@ Tokens
     transform: translate(-50%, -50%) scale(1);
   }
   50% {
-    transform: translate(-50%, -50%) scale(1.12);  /* slightly larger pulse */
+    transform: translate(-50%, -50%) scale(1.12);
   }
   100% {
     transform: translate(-50%, -50%) scale(1);
   }
 }
-
 
 /* Jump on six */
 @keyframes token-jump {
@@ -230,15 +214,15 @@ Tokens
   animation: token-penalty-glow 1.2s ease-in-out;
 }
 
-/* Snake bite: red flash + small shake in place */
+/* Snake bite */
 @keyframes token-snake-hit {
   0% {
     transform: translate(-50%, -50%) scale(1);
-    filter: drop-shadow(0 0 0 rgba(255,0,0,0));
+    filter: drop-shadow(0 0 0 rgba(255, 0, 0, 0));
   }
   20% {
     transform: translate(-50%, -50%) translateX(-3px);
-    filter: drop-shadow(0 0 10px rgba(255,0,0,0.9));
+    filter: drop-shadow(0 0 10px rgba(255, 0, 0, 0.9));
   }
   40% {
     transform: translate(-50%, -50%) translateX(3px);
@@ -251,7 +235,7 @@ Tokens
   }
   100% {
     transform: translate(-50%, -50%) scale(1);
-    filter: drop-shadow(0 0 0 rgba(255,0,0,0));
+    filter: drop-shadow(0 0 0 rgba(255, 0, 0, 0));
   }
 }
 
@@ -259,22 +243,22 @@ Tokens
   animation: token-snake-hit 0.5s ease-out;
 }
 
-/* Ladder bonus: quick upward bounce + green glow */
+/* Ladder bonus */
 @keyframes token-ladder-hit {
   0% {
     transform: translate(-50%, -50%) scale(1);
-    filter: drop-shadow(0 0 0 rgba(0,255,100,0));
+    filter: drop-shadow(0 0 0 rgba(0, 255, 100, 0));
   }
   30% {
     transform: translate(-50%, -58%) scale(1.12);
-    filter: drop-shadow(0 0 10px rgba(0,255,120,0.9));
+    filter: drop-shadow(0 0 10px rgba(0, 255, 120, 0.9));
   }
   60% {
     transform: translate(-50%, -52%) scale(0.98);
   }
   100% {
     transform: translate(-50%, -50%) scale(1);
-    filter: drop-shadow(0 0 0 rgba(0,255,100,0));
+    filter: drop-shadow(0 0 0 rgba(0, 255, 100, 0));
   }
 }
 
@@ -282,11 +266,7 @@ Tokens
   animation: token-ladder-hit 0.45s ease-out;
 }
 
-
-
-/* -----------------------------
-Control column — panel
------------------------------ */
+/* -------- Control panel -------- */
 .control-column {
   flex: 1 1 340px;
   max-width: 380px;
@@ -305,7 +285,6 @@ Control column — panel
   border: 2px solid rgba(92, 51, 23, 0.2);
 }
 
-/* Title & turn */
 .title {
   text-align: center;
   font-size: clamp(1.2rem, 2.2vw, 1.5rem);
@@ -323,10 +302,11 @@ Control column — panel
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.35);
 }
 
-/* Dice stage */
+/* Dice */
 .dice-panel {
   margin: 6px 0;
 }
+
 .dice-stage {
   margin: 6px 0;
   width: var(--cube-size);
@@ -334,7 +314,6 @@ Control column — panel
   perspective: 1400px;
 }
 
-/* Dice cube */
 .dice-cube {
   width: 100%;
   height: 100%;
@@ -349,7 +328,6 @@ Control column — panel
   content: none !important;
 }
 
-/* Dice faces */
 .die-face {
   position: absolute;
   width: 100%;
@@ -364,24 +342,12 @@ Control column — panel
 }
 
 /* Face images */
-.face1 {
-  background-image: url("images/die-1.png");
-}
-.face2 {
-  background-image: url("images/die-2.png");
-}
-.face3 {
-  background-image: url("images/die-3.png");
-}
-.face4 {
-  background-image: url("images/die-4.png");
-}
-.face5 {
-  background-image: url("images/die-5.png");
-}
-.face6 {
-  background-image: url("images/die-6.png");
-}
+.face1 { background-image: url("images/die-1.png"); }
+.face2 { background-image: url("images/die-2.png"); }
+.face3 { background-image: url("images/die-3.png"); }
+.face4 { background-image: url("images/die-4.png"); }
+.face5 { background-image: url("images/die-5.png"); }
+.face6 { background-image: url("images/die-6.png"); }
 
 /* Face transforms */
 .die-face:nth-child(1) {
@@ -409,9 +375,7 @@ Control column — panel
     translateZ(calc(var(--cube-size) / 2 + 0.6px));
 }
 
-/* -----------------------------
-Buttons
------------------------------ */
+/* -------- Buttons -------- */
 .controls-row,
 .bottom-row {
   display: flex;
@@ -434,6 +398,7 @@ Buttons
     transform 0.12s ease,
     box-shadow 0.12s ease,
     filter 0.12s ease;
+  border: none;
 }
 
 /* Roll dice */
@@ -444,9 +409,11 @@ Buttons
     0 6px 0 #4b2a12,
     0 10px 20px rgba(0, 0, 0, 0.35);
 }
+
 .btn.primary:hover {
   filter: brightness(1.05);
 }
+
 .btn.primary:active {
   transform: translateY(4px);
   box-shadow:
@@ -463,9 +430,11 @@ Buttons
     0 5px 0 #9c8a5c,
     0 9px 18px rgba(0, 0, 0, 0.25);
 }
+
 .btn.secondary:hover {
   filter: brightness(1.05);
 }
+
 .btn.secondary:active {
   transform: translateY(3px);
   box-shadow:
@@ -473,9 +442,13 @@ Buttons
     0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
-/* -----------------------------
-Mode toggle
------------------------------ */
+/* Disabled visual */
+.btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+/* -------- Mode toggle -------- */
 .mode-toggle {
   width: 100%;
   display: flex;
@@ -536,9 +509,7 @@ Mode toggle
     0 8px 18px rgba(0, 0, 0, 0.35);
 }
 
-/* -----------------------------
-Status & messages
------------------------------ */
+/* -------- Status & messages -------- */
 .status-row {
   margin-top: 4px;
   margin-bottom: 4px;
@@ -574,11 +545,9 @@ Status & messages
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.35);
 }
 
-/* -----------------------------
-Responsive layout
------------------------------ */
+/* -------- Responsive layout -------- */
 
-/* Desktop & large screens: side‑by‑side (already the default) */
+/* Desktop & large screens */
 @media (min-width: 901px) {
   .app {
     flex-direction: row;
@@ -586,12 +555,11 @@ Responsive layout
   }
 }
 
-
-/* ---------- Phone landscape: side‑by‑side, no scroll ---------- */
-
+/* Phone landscape: side-by-side, full viewport */
 @media (max-width: 900px) and (orientation: landscape) {
   body {
-    padding: 0;              /* use full viewport */
+    padding: 0;
+    padding-bottom: env(safe-area-inset-bottom);
   }
 
   .app {
@@ -602,12 +570,11 @@ Responsive layout
     height: 100vh;
     max-width: 100vw;
     max-height: 100vh;
-    overflow: hidden;        /* no scroll */
+    overflow: hidden;
   }
 
-  /* Board column uses full height, fixed ratio */
   .board-column {
-    flex: 0 0 55vw;          /* ~55% of width for board */
+    flex: 0 0 55vw;
     max-width: 55vw;
     display: flex;
     justify-content: center;
@@ -619,32 +586,30 @@ Responsive layout
     height: 100%;
     max-width: 55vw;
     max-height: 100vh;
-    aspect-ratio: auto;      /* let height drive size */
+    aspect-ratio: auto;
   }
 
   .board-img {
     width: 100%;
     height: 100%;
-    object-fit: contain;     /* keep full board visible with frame */
+    object-fit: contain;
   }
 
   .grid {
     inset: 0;
-    padding: 6px;            /* slightly smaller padding */
+    padding: 6px;
   }
 
-  /* Control panel column fills right side, same height */
   .control-column {
     flex: 1 1 auto;
     max-width: 45vw;
     height: 100vh;
     max-height: 100vh;
-    overflow: hidden;        /* internal layout must fit */
+    overflow: hidden;
     padding: 10px 12px;
     gap: 10px;
   }
 
-  /* Make inner elements more compact so they fit vertically */
   .title {
     font-size: 1.1rem;
   }
@@ -681,9 +646,7 @@ Responsive layout
   }
 }
 
-/* -----------------------------
-Update toast
------------------------------ */
+/* -------- Update toast -------- */
 .update-toast,
 #update-toast {
   position: fixed;
